@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:travafa/features/post/presentation/bloc/feed_bloc.dart';
 import 'package:travafa/features/post/presentation/pages/post_detail_page.dart';
+import 'package:travafa/features/post/presentation/pages/user_profile.dart';
 import 'package:travafa/features/post/presentation/widgets/empty_view.dart';
 import 'package:travafa/features/post/presentation/widgets/error_view.dart';
 import 'package:travafa/features/post/presentation/widgets/post_list_item.dart';
@@ -61,7 +62,7 @@ class _FeedPageState extends State<FeedPage> {
                     final text = controller.text.trim();
                     if (text.isEmpty) return;
 
-                    // 👇 use blocContext which is definitely under BlocProvider<FeedBloc>
+                    
                     blocContext.read<FeedBloc>().add(
                           CreatePostEvent(
                             userId: widget.currentUserId,
@@ -112,13 +113,11 @@ class _FeedPageState extends State<FeedPage> {
 
   @override
   Widget build(BuildContext context) {
-    // IMPORTANT:
-    // 1. We create the FeedBloc here.
-    // 2. We immediately dispatch LoadFeedEvent() once.
+ 
     return BlocProvider(
       create: (_) => serviceLocator<FeedBloc>()..add(LoadFeedEvent()),
       child: Builder(
-        // This Builder gives us a new context *under* the BlocProvider.
+        
         builder: (blocContext) {
           return Scaffold(
             appBar: AppBar(title: const Text('Home Feed')),
@@ -170,8 +169,17 @@ class _FeedPageState extends State<FeedPage> {
                           );
                         },
                         onTapUser: () {
-                          // TODO: Navigate to user profile page
-                        },
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => UserProfilePage(
+        userId: post.userId,
+        username: post.username,
+        isCurrentUser: post.userId == widget.currentUserId,
+      ),
+    ),
+  );
+},
+
                         onDelete: () {
                           _showDeleteConfirmation(blocContext, post.id);
                         },
